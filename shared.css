@@ -1,0 +1,17 @@
+/* shared design tokens and layout — embedded in each page */
+:root {
+  --bg:#f7f6f3;--surface:#fff;--surface-2:#f0ede8;
+  --border:#e4e0d8;--border-strong:#ccc8be;
+  --text:#1a1916;--text-2:#6b6760;--text-3:#a09d99;
+  --accent:#2d6ef7;--accent-light:#e8effe;--accent-hover:#1f55d4;
+  --green:#1a9e5e;--green-light:#e4f7ef;
+  --amber:#c67b13;--amber-light:#fef3e0;
+  --red:#d63535;--red-light:#fdeaea;
+  --purple:#7c3aed;--purple-light:#ede9fe;
+  --radius-sm:6px;--radius:10px;--radius-lg:16px;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.06);
+  --shadow:0 4px 16px rgba(0,0,0,.08);
+  --shadow-lg:0 16px 48px rgba(0,0,0,.14);
+  --nav-h:56px;--sidebar-w:220px;
+  --font-body:'DM Sans',sans-serif;--font-mono:'DM Mono',monospace;
+}
