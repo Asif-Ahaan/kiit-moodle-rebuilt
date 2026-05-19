@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Courses — KIIT Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:#f7f6f3;--surface:#fff;--surface-2:#f0ede8;
+      --border:#e4e0d8;--border-strong:#ccc8be;
+      --text:#1a1916;--text-2:#6b6760;--text-3:#a09d99;
+      --accent:#2d6ef7;--accent-light:#e8effe;--accent-hover:#1f55d4;
+      --green:#1a9e5e;--green-light:#e4f7ef;
+      --amber:#c67b13;--amber-light:#fef3e0;
+      --red:#d63535;--red-light:#fdeaea;
+      --purple:#7c3aed;--purple-light:#ede9fe;
+      --radius-sm:6px;--radius:10px;--radius-lg:16px;
+      --shadow-sm:0 1px 3px rgba(0,0,0,.06);
+      --shadow:0 4px 16px rgba(0,0,0,.08);
+      --nav-h:56px;--sidebar-w:220px;
+      --font-body:'DM Sans',sans-serif;--font-mono:'DM Mono',monospace;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{font-size:15px;-webkit-font-smoothing:antialiased}
+    body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-height:100vh}
+    a{color:inherit;text-decoration:none}
+    button{cursor:pointer;font-family:inherit}
+    ul,ol{list-style:none}
+    ::-webkit-scrollbar{width:6px;height:6px}
+    ::-webkit-scrollbar-track{background:transparent}
+    ::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:999px}
+
+    /* ── Nav ── */
+    .topnav{position:fixed;top:0;left:0;right:0;z-index:100;height:var(--nav-h);background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:12px;box-shadow:var(--shadow-sm)}
+    .topnav__logo{font-weight:600;font-size:1rem;letter-spacing:-.02em;display:flex;align-items:center;gap:8px}
+    .topnav__logo .badge{font-family:var(--font-mono);font-size:.65rem;background:var(--accent-light);color:var(--accent);padding:2px 6px;border-radius:4px;font-weight:500}
+    .topnav__sep{width:1px;height:20px;background:var(--border);margin:0 4px}
+    .topnav__breadcrumb{font-size:.85rem;color:var(--text-2);display:flex;align-items:center;gap:6px}
+    .topnav__breadcrumb .active{color:var(--text);font-weight:500}
+    .topnav__right{margin-left:auto;display:flex;align-items:center;gap:8px}
+    .icon-btn{width:34px;height:34px;border:1px solid var(--border);border-radius:var(--radius-sm);background:transparent;display:inline-flex;align-items:center;justify-content:center;color:var(--text-2);transition:background .15s,color .15s}
+    .icon-btn:hover{background:var(--surface-2);color:var(--text)}
+    .icon-btn svg{width:16px;height:16px}
+    .avatar-btn{display:flex;align-items:center;gap:8px;padding:4px 10px 4px 4px;border:1px solid var(--border);border-radius:999px;background:transparent;font-size:.82rem;font-weight:500;transition:background .15s}
+    .avatar-btn:hover{background:var(--surface-2)}
+    .avatar-btn .avatar{width:26px;height:26px;border-radius:999px;background:var(--accent);color:#fff;font-size:.7rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+
+    /* ── Layout ── */
+    .layout{display:flex;padding-top:var(--nav-h);min-height:100vh}
+    .sidebar{width:var(--sidebar-w);flex-shrink:0;position:sticky;top:var(--nav-h);height:calc(100vh - var(--nav-h));overflow-y:auto;background:var(--surface);border-right:1px solid var(--border);padding:16px 10px;display:flex;flex-direction:column;gap:4px}
+    .sidebar__label{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);padding:8px 10px 4px;margin-top:8px}
+    .sidebar__item{display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:var(--radius-sm);font-size:.875rem;color:var(--text-2);transition:background .13s,color .13s}
+    .sidebar__item:hover{background:var(--surface-2);color:var(--text)}
+    .sidebar__item.active{background:var(--accent-light);color:var(--accent);font-weight:500}
+    .sidebar__item svg{width:15px;height:15px;flex-shrink:0}
+    .sidebar__course{display:flex;align-items:center;gap:9px;padding:6px 10px;border-radius:var(--radius-sm);font-size:.82rem;color:var(--text-2);transition:background .13s,color .13s}
+    .sidebar__course:hover{background:var(--surface-2);color:var(--text)}
+    .sidebar__course .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+    .main{flex:1;padding:32px 36px;max-width:960px}
+
+    /* ── Page header ── */
+    .page-header{margin-bottom:28px}
+    .page-header__title{font-size:1.55rem;font-weight:600;letter-spacing:-.03em;line-height:1.2;margin-bottom:4px}
+    .page-header__sub{font-size:.88rem;color:var(--text-2)}
+
+    /* ── Section label ── */
+    .section-label{font-family:var(--font-mono);font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text-3);margin-bottom:14px;font-weight:500}
+
+    /* ── Course block ── */
+    .course-block{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:24px}
+    .course-block__header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:16px}
+    .course-block__stripe{width:4px;border-radius:999px;flex-shrink:0;align-self:stretch}
+    .course-block__meta{}
+    .course-block__code{font-family:var(--font-mono);font-size:.7rem;color:var(--text-3);letter-spacing:.06em;margin-bottom:4px}
+    .course-block__name{font-size:1.1rem;font-weight:600;letter-spacing:-.02em;margin-bottom:6px}
+    .course-block__desc{font-size:.85rem;color:var(--text-2);line-height:1.5}
+    .course-block__pills{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+
+    /* ── Pill ── */
+    .pill{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:999px;font-size:.73rem;font-weight:500}
+    .pill--green{background:var(--green-light);color:var(--green)}
+    .pill--amber{background:var(--amber-light);color:var(--amber)}
+    .pill--blue{background:var(--accent-light);color:var(--accent)}
+    .pill--purple{background:var(--purple-light);color:var(--purple)}
+    .pill--red{background:var(--red-light);color:var(--red)}
+
+    /* ── Topic sections ── */
+    .topic{border-bottom:1px solid var(--border)}
+    .topic:last-child{border-bottom:none}
+    .topic__header{display:flex;align-items:center;gap:12px;padding:14px 24px;cursor:pointer;user-select:none;transition:background .13s}
+    .topic__header:hover{background:var(--surface-2)}
+    .topic__chevron{color:var(--text-3);transition:transform .2s;flex-shrink:0}
+    .topic__chevron svg{width:14px;height:14px}
+    .topic.open .topic__chevron{transform:rotate(90deg)}
+    .topic__title{font-size:.9rem;font-weight:600;color:var(--text);flex:1}
+    .topic__count{font-family:var(--font-mono);font-size:.68rem;color:var(--text-3)}
+    .topic__body{display:none;background:var(--bg)}
+    .topic.open .topic__body{display:block}
+
+    /* ── Resource items ── */
+    .resource{display:flex;align-items:center;gap:14px;padding:11px 24px 11px 48px;border-bottom:1px solid var(--border);transition:background .13s;cursor:pointer}
+    .resource:last-child{border-bottom:none}
+    .resource:hover{background:var(--surface-2)}
+    .resource__icon{width:32px;height:32px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .resource__icon svg{width:15px;height:15px}
+    .resource__icon--pdf{background:#fdeaea;color:var(--red)}
+    .resource__icon--slides{background:var(--amber-light);color:var(--amber)}
+    .resource__icon--assign{background:var(--accent-light);color:var(--accent)}
+    .resource__icon--video{background:var(--purple-light);color:var(--purple)}
+    .resource__icon--link{background:var(--green-light);color:var(--green)}
+    .resource__icon--quiz{background:#fef3e0;color:var(--amber)}
+    .resource__info{flex:1;min-width:0}
+    .resource__name{font-size:.875rem;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .resource__meta{font-size:.75rem;color:var(--text-3);margin-top:2px}
+    .resource__badge{font-family:var(--font-mono);font-size:.65rem;padding:2px 7px;border-radius:4px;font-weight:500;flex-shrink:0}
+    .resource__badge--due{background:var(--red-light);color:var(--red)}
+    .resource__badge--submitted{background:var(--green-light);color:var(--green)}
+    .resource__badge--graded{background:var(--accent-light);color:var(--accent)}
+
+    /* ── PDF modal ── */
+    .pdf-backdrop{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .2s}
+    .pdf-backdrop.open{opacity:1;pointer-events:all}
+    .pdf-modal{background:var(--surface);border-radius:var(--radius-lg);box-shadow:0 24px 64px rgba(0,0,0,.2);width:100%;max-width:900px;height:88vh;display:flex;flex-direction:column;overflow:hidden;transform:translateY(12px);transition:transform .22s}
+    .pdf-backdrop.open .pdf-modal{transform:translateY(0)}
+    .pdf-toolbar{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--border);flex-shrink:0}
+    .pdf-title{font-size:.88rem;font-weight:500;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .pdf-toolbar-right{margin-left:auto;display:flex;gap:8px}
+    .btn{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:var(--radius-sm);font-size:.82rem;font-weight:500;border:1px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer;font-family:inherit;transition:background .13s,border-color .13s;text-decoration:none}
+    .btn:hover{background:var(--surface-2);border-color:var(--border-strong)}
+    .btn--accent{background:var(--accent);border-color:var(--accent);color:#fff}
+    .btn--accent:hover{background:var(--accent-hover);border-color:var(--accent-hover)}
+    .btn svg{width:14px;height:14px}
+    .pdf-viewer{flex:1;overflow:hidden}
+    .pdf-viewer iframe{width:100%;height:100%;border:none}
+    .pdf-placeholder{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:var(--text-2)}
+    .pdf-placeholder svg{width:52px;height:52px;color:var(--border-strong)}
+    .pdf-placeholder p{font-size:.9rem}
+    .pdf-placeholder small{font-size:.8rem;color:var(--text-3)}
+
+    @media(max-width:900px){.sidebar{display:none}.main{padding:20px 16px}}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    .fade-up{animation:fadeUp .25s ease both}
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="topnav">
+  <a href="index.html" class="topnav__logo">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+    KIIT Moodle
+    <span class="badge">LMS</span>
+  </a>
+  <div class="topnav__sep"></div>
+  <div class="topnav__breadcrumb">
+    <a href="index.html" style="color:var(--text-2)">Dashboard</a>
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+    <span class="active">My Courses</span>
+  </div>
+  <div class="topnav__right">
+    <button class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></button>
+    <a href="profile.html" class="avatar-btn"><div class="avatar">SA</div>23051951 SHEIKH ASIF</a>
+  </div>
+</nav>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <a href="index.html" class="sidebar__item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Dashboard
+    </a>
+    <a href="courses.html" class="sidebar__item active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+      My Courses
+    </a>
+    <a href="calendar.html" class="sidebar__item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Calendar
+    </a>
+    <a href="grades.html" class="sidebar__item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Grades
+    </a>
+    <a href="profile.html" class="sidebar__item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Profile
+    </a>
+    <div class="sidebar__label">My Courses</div>
+    <a href="#ccso50" class="sidebar__course"><div class="dot" style="background:#2d6ef7"></div>CCSO50</a>
+    <a href="#ccnt" class="sidebar__course"><div class="dot" style="background:#1a9e5e"></div>CCNTCSE1416</a>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="page-header fade-up">
+      <div class="page-header__title">My Courses</div>
+      <div class="page-header__sub">2 courses enrolled this semester · Click any topic to expand</div>
+    </div>
+
+    <!-- ══ COURSE 1: CCSO50 ══ -->
+    <div class="section-label fade-up">Course 1 of 2</div>
+    <div class="course-block fade-up" id="ccso50">
+      <div class="course-block__header">
+        <div class="course-block__stripe" style="background:#2d6ef7"></div>
+        <div class="course-block__meta">
+          <div class="course-block__code">CCSO50 · School of Computer Science · KIIT University</div>
+          <div class="course-block__name">Security Operations (SOC)</div>
+          <div class="course-block__desc">Covers Security Operations Centre workflows, threat detection and hunting, incident response playbooks, SIEM tools (Splunk/QRadar), log analysis, and blue-team fundamentals.</div>
+          <div class="course-block__pills">
+            <span class="pill pill--green">In Progress</span>
+            <span class="pill pill--blue">6 Topics</span>
+            <span class="pill pill--amber">1 Pending Assignment</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Topic 1 -->
+      <div class="topic open" id="t1">
+        <div class="topic__header" onclick="toggleTopic(this)">
+          <span class="topic__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></span>
+          <span class="topic__title">Unit 1 — Introduction to Security Operations</span>
+          <span class="topic__count">3 resources</span>
+        </div>
+        <div class="topic__body">
+          <div class="resource" onclick="openDoc('SOC Overview — Lecture Slides.pdf','slides')">
+            <div class="resource__icon resource__icon--slides">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            </div>
+            <div class="resource__info">
+              <div class="resource__name">SOC Overview — Lecture Slides</div>
+              <div class="resource__meta">PowerPoint · Uploaded 12 Mar 2026</div>
+            </div>
+            <span class="resource__badge resource__badge--graded">Slides</span>
+          </div>
+          <div class="resource" onclick="openDoc('Introduction to SIEM.pdf','pdf')">
+            <div class="resource__icon resource__icon--pdf">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </div>
+            <div class="resource__info">
+              <div class="resource__name">Introduction to SIEM</div>
+              <div class="resource__meta">PDF · 24 pages · Uploaded 13 Mar 2026</div>
+            </div>
+            <span class="resource__badge resource__badge--graded">PDF</span>
+          </div>
+          <div class="resource" onclick="openDoc('Unit 1 Quiz','quiz')">
+            <div class="resource__icon resource__icon--quiz">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            </div>
+            <div class="resource__info">
+              <div class="resource__name">Unit 1 Quiz</div>
+              <div class="resource__meta">10 questions · Attempt by 20 Mar 2026</div>
+            </div>
+            <span class="resource__badge resource__badge--submitted">Submitted</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Topic 2 -->
+      <div class="topic" id="t2">
+        <div class="topic__header" onclick="toggleTopic(this)">
+          <span class="topic__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></span>
+          <span class="topic__title">Unit 2 — Threat Detection & Log Analysis</span>
+          <span class="topic__count">4 resources</span>
+        </div>
+        <div class="topic__body">
+          <div class="resource" onclick="openDoc('Threat Detection Methodologies.pdf','pdf')">
+            <div class="resource__icon resource__icon--pdf">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </div>
+            <div class="resource__info">
+              <div class="resource__name">Threat Detection Methodologies</div>
+              <div class="resource__meta">PDF · 31 pages · Uploaded 19 Mar 2026</div>
+            </div>
+            <span class="resource__badge resource__badge--graded">PDF</span>
+          </div>
+          <div class="resource" onclick="openDoc('Log Analysis with Splunk — Slides.pdf','slides')">
+            <div class="resource__icon resource__icon--slides">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            </div>
+            <div class="resource__info">
+              <div class="resource__name">Log Analysis with Splunk — Slides</div>
+              <div class="resource__meta">PowerPoint · Uploaded 21 Mar 2026</div>
+            </div>
+            <span class="resource__badge resource__badge--graded">Slides</span>
+          </div>
+          <div class="resource" onclick="openDoc('Splunk Lab Tutorial','video')">
+            <div class="resource__icon resource__icon--video">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+            </div>
+            <div class="resource__info">
+              <div class="resource__name">Splunk Lab Tutorial (Video)</div>
+              <div class="resource__meta">MP4 · 38 min · Uploaded 22 Mar 2026</div>
+            </div>
+            <span class="resource__badge resource__badge--graded">Video</span>
+          </div>
+          <div class="resource" onclick="openDoc('Lab Assignment 1 — Splunk Log Hunt','assign')">
+            <div class="resource__icon resource__icon--assign">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            </div>
+            <div class="resource__info">
+              <div class="resource__name">Lab Assignment 1 — Splunk Log Hunt</div>
+              <div class="resource__meta">Due: 28 Mar 2026 · 20 marks</div>
+            </div>
+            <span class="resource__badge resource__badge--due">Due Soon</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Topic 3 -->
+      <div class="topic">
+        <div class="topic__header" onclick="toggleTopic(this)">
+          <span class="topic__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></span>
+          <span class="topic__title">Unit 3 — Incident Response & Playbooks</span>
+          <span class="topic__count">3 resources</span>
+        </div>
+        <div class="topic__body">
+          <div class="resource" onclick="openDoc('Incident Response Lifecycle.pdf','pdf')">
+            <div class="resource__icon resource__icon--pdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+            <div class="resource__info"><div class="resource__name">Incident Response Lifecycle</div><div class="resource__meta">PDF · 18 pages · Uploaded 2 Apr 2026</div></div>
+            <span class="resource__badge resource__badge--graded">PDF</span>
+          </div>
+          <div class="resource" onclick="openDoc('IR Playbook Template.pdf','pdf')">
+            <div class="resource__icon resource__icon--pdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+            <div class="resource__info"><div class="resource__name">IR Playbook Template</div><div class="resource__meta">PDF · Template · Uploaded 3 Apr 2026</div></div>
+            <span class="resource__badge resource__badge--graded">PDF</span>
+          </div>
+          <div class="resource" onclick="openDoc('Unit 3 Assignment — Write an IR Playbook','assign')">
+            <div class="resource__icon resource__icon--assign"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
+            <div class="resource__info"><div class="resource__name">Unit 3 Assignment — Write an IR Playbook</div><div class="resource__meta">Due: 15 Apr 2026 · 30 marks</div></div>
+            <span class="resource__badge resource__badge--submitted">Submitted</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Topic 4–6 collapsed -->
+      <div class="topic">
+        <div class="topic__header" onclick="toggleTopic(this)">
+          <span class="topic__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></span>
+          <span class="topic__title">Unit 4 — Network Forensics</span>
+          <span class="topic__count">2 resources</span>
+        </div>
+        <div class="topic__body">
+          <div class="resource" onclick="openDoc('Network Forensics Fundamentals.pdf','pdf')">
+            <div class="resource__icon resource__icon--pdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+            <div class="resource__info"><div class="resource__name">Network Forensics Fundamentals</div><div class="resource__meta">PDF · 26 pages · Uploaded 10 Apr 2026</div></div>
+            <span class="resource__badge resource__badge--graded">PDF</span>
+          </div>
+          <div class="resource" onclick="openDoc('Wireshark Lab Guide.pdf','pdf')">
+            <div class="resource__icon resource__icon--pdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+            <div class="resource__info"><div class="resource__name">Wireshark Lab Guide</div><div class="resource__meta">PDF · 14 pages · Uploaded 11 Apr 2026</div></div>
+            <span class="resource__badge resource__badge--graded">PDF</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="topic">
+        <div class="topic__header" onclick="toggleTopic(this)">
+          <span class="topic__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></span>
+          <span class="topic__title">Unit 5 — Vulnerability Management</span>
+          <span class="topic__count">3 resources</span>
+        </div>
+        <div class="topic__body">
+          <div class="resource" onclick="openDoc('Vulnerability Management Lifecycle.pdf','pdf')">
+            <div class="resource__icon resource__icon--pdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+            <div class="resource__info"><div class="resource__name">Vulnerability Management Lifecycle</div><div class="resource__meta">PDF · 20 pages</div></div>
+            <span class="resource__badge resource__badge--graded">PDF</span>
+          </div>
+          <div class="resource" onclick="openDoc('Nessus & OpenVAS Guide.pdf','pdf')">
+            <div class="resource__icon resource__icon--pdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+            <div class="resource__info"><div class="resource__name">Nessus &amp; OpenVAS Guide</div><div class="resource__meta">PDF · 17 pages</div></div>
+            <span class="resource__badge resource__badge--graded">PDF</span>
+          </div>
+          <div class="resource" onclick="openDoc('Mid-Term Assignment','assign')">
+            <div class="resource__icon resource__icon--assign"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
+            <div class="resource__info"><div class="resource__name">Mid-Term Assignment — Vuln Scan Report</div><div class="resource__meta">Due: 1 May 2026 · 40 marks</div></div>
+            <span class="resource__badge resource__badge--submitted">Submitted</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="topic">
+        <div class="topic__header" onclick="toggleTopic(this)">
+          <span class="topic__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></span>
+          <span class="topic__title">Unit 6 — Threat Intelligence & CTI Frameworks</span>
+          <span class="topic__count">2 resources</span>
+        </div>
+        <div class="topic__body">
+          <div class="resource" onclick="openDoc('MITRE ATT&CK Framework.pdf','pdf')">
+            <div class="resource__icon resource__icon--pdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+            <div class="resource__info"><div class="resource__name">MITRE ATT&amp;CK Framework Overview</div><div class="resource__meta">PDF · 22 pages</div></div>
+            <span class="resource__badge resource__badge--graded">PDF</span>
+          </div>
+          <div class="resource" onclick="openDoc('CTI Platforms & STIX TAXII.pdf','pdf')">
+            <div class="resource__icon resource__icon--pdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+            <div class="resource__info"><div class="resource__name">CTI Platforms &amp; STIX/TAXII</div><div class="resource__meta">PDF · 16 pages</div></div>
+            <span class="resource__badge resource__badge--graded">PDF</span>
+          </div>
+        </div>
+      </div>
+    </div><!-- /course-block ccso50 -->
+
+    <!-- ══ COURSE 2: CCNTCSE1416 ══ -->
+    <div class="section-label fade-up" style="margin-top:8px">Course 2 of 2</div>
+    <div class="course-block fade-up" id="ccnt">
+      <div class="course-block__header">
+        <div class="course-block__stripe" style="background:#1a9e5e"></div>
+        <div class="course-block__meta">
+          <div class="course-block__code">CCNTCSE1416 · School of Computer Science · KIIT University</div>
+          <div class="course-block__name">Computer Networks</div>
+          <div class="course-block__desc">OSI & TCP/IP models, IP addressing, subnetting, routing protocols (RIP, OSPF, BGP), switching, VLANs, transport layer (TCP/UDP), application layer protocols, and network security fundamentals.</div>
+          <div class="course-block__pills">
+            <span class="pill pill--green">In Progress</span>
+            <span class="pill pill--blue">5 Topics</span>
+            <span class="pill pill--green">All Caught Up</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="topic open">
+        <div class="topic__header" onclick="toggleTopic(this)">
+          <span class="topic__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></span>
+          <span class="topic__title">Unit 1 — Network Models & Layered Architecture</span>
+          <span class="topic__count">3 resources</span>
+        </div>
+        <div class="topic__body">
+          <div class="resource" onclick="openDoc('OSI & TCP/IP Model Slides.pdf','slides')">
+            <div class="resource__icon resource__icon--slides"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+            <div class="resource__info"><div class="resource__name">OSI &amp; TCP/IP Model Slides</div><div class="resource__meta">PowerPoint · Uploaded 10 Feb 2026</div></div>
+            <span class="resource__badge resource__badge--graded">Slides</span>
+          </div>
+          <div class="resource" onclick="openDoc('Network Models — Reference Notes.pdf','pdf')">
+            <div class="resource__icon resource__icon--pdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+            <div class="resource__info"><div class="resource__name">Network Models — Reference Notes</div><div class="resource__meta">PDF · 19 pages · Uploaded 11 Feb 2026</div></div>
+            <span class="resource__badge resource__badge--graded">PDF</span>
+          </div>
+          <div class="resource" onclick="openDoc('Unit 1 Quiz','quiz')">
+            <div class="resource__icon resource__icon--quiz"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+            <div class="resource__info"><div class="resource__name">Unit 1 Quiz</div><div class="resource__meta">15 questions · Graded</div></div>
+            <span class="resource__badge resource__badge--graded">14 / 15</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="topic">
+        <div class="topic__header" onclick="toggleTopic(this)">
+          <span class="topic__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></span>
+          <span class="topic__title">Unit 2 — IP Addressing, Subnetting & CIDR</span>
+          <span class="topic__count">4 resources</span>
+        </div>
+        <div class="topic__body">
+          <div class="resource" onclick="openDoc('IP Addressing & Subnetting.pdf','pdf')">
+            <div class="resource__icon resource__icon--pdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+            <div class="resource__info"><div class="resource__name">IP Addressing &amp; Subnetting</div><div class="resource__meta">PDF · 28 pages</div></div>
+            <span class="resource__badge resource__badge--graded">PDF</span>
+          </div>
+          <div class="resource" onclick="openDoc('Subnetting Practice Problems.pdf','pdf')">
+            <div class="resource__icon resource__icon--pdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+            <div class="resource__info"><div class="resource__name">Subnetting Practice Problems</div><div class="resource__meta">PDF · 8 pages · Problem set</div></div>
+            <span class="resource__badge resource__badge--graded">PDF</span>
+          </div>
+          <div class="resource" onclick="openDoc('Subnetting Video Lecture','video')">
+            <div class="resource__icon resource__icon--video"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></div>
+            <div class="resource__info"><div class="resource__name">Subnetting Video Lecture</div><div class="resource__meta">MP4 · 52 min</div></div>
+            <span class="resource__badge resource__badge--graded">Video</span>
+          </div>
+          <div class="resource" onclick="openDoc('Assignment 2 — Subnet Design','assign')">
+            <div class="resource__icon resource__icon--assign"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
+            <div class="resource__info"><div class="resource__name">Assignment 2 — Subnet Design Task</div><div class="resource__meta">Due: 5 Mar 2026 · 25 marks · Graded: 22/25</div></div>
+            <span class="resource__badge resource__badge--graded">22 / 25</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="topic">
+        <div class="topic__header" onclick="toggleTopic(this)">
+          <span class="topic__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></span>
+          <span class="topic__title">Unit 3 — Routing Protocols (RIP, OSPF, BGP)</span>
+          <span class="topic__count">3 resources</span>
+        </div>
+        <div class="topic__body">
+          <div class="resource" onclick="openDoc('Dynamic Routing Protocols.pdf','pdf')">
+            <div class="resource__icon resource__icon--pdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+            <div class="resource__info"><div class="resource__name">Dynamic Routing Protocols</div><div class="resource__meta">PDF · 34 pages</div></div>
+            <span class="resource__badge resource__badge--graded">PDF</span>
+          </div>
+          <div class="resource" onclick="openDoc('Routing Slides.pdf','slides')">
+            <div class="resource__icon resource__icon--slides"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+            <div class="resource__info"><div class="resource__name">Routing Protocols — Lecture Slides</div><div class="resource__meta">PowerPoint · 42 slides</div></div>
+            <span class="resource__badge resource__badge--graded">Slides</span>
+          </div>
+          <div class="resource" onclick="openDoc('Routing Lab (Packet Tracer)','assign')">
+            <div class="resource__icon resource__icon--assign"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
+            <div class="resource__info"><div class="resource__name">Routing Lab — Packet Tracer Exercise</div><div class="resource__meta">Graded: 18/20</div></div>
+            <span class="resource__badge resource__badge--graded">18 / 20</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="topic">
+        <div class="topic__header" onclick="toggleTopic(this)">
+          <span class="topic__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></span>
+          <span class="topic__title">Unit 4 — Transport Layer & Application Protocols</span>
+          <span class="topic__count">3 resources</span>
+        </div>
+        <div class="topic__body">
+          <div class="resource" onclick="openDoc('TCP vs UDP Deep Dive.pdf','pdf')">
+            <div class="resource__icon resource__icon--pdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+            <div class="resource__info"><div class="resource__name">TCP vs UDP — Deep Dive</div><div class="resource__meta">PDF · 21 pages</div></div>
+            <span class="resource__badge resource__badge--graded">PDF</span>
+          </div>
+          <div class="resource" onclick="openDoc('HTTP HTTPS DNS DHCP.pdf','pdf')">
+            <div class="resource__icon resource__icon--pdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+            <div class="resource__info"><div class="resource__name">HTTP, HTTPS, DNS, DHCP Notes</div><div class="resource__meta">PDF · 15 pages</div></div>
+            <span class="resource__badge resource__badge--graded">PDF</span>
+          </div>
+          <div class="resource" onclick="openDoc('Unit 4 Quiz','quiz')">
+            <div class="resource__icon resource__icon--quiz"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+            <div class="resource__info"><div class="resource__name">Unit 4 Quiz</div><div class="resource__meta">12 questions · Graded</div></div>
+            <span class="resource__badge resource__badge--graded">11 / 12</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="topic">
+        <div class="topic__header" onclick="toggleTopic(this)">
+          <span class="topic__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></span>
+          <span class="topic__title">Unit 5 — Network Security & Firewalls</span>
+          <span class="topic__count">2 resources</span>
+        </div>
+        <div class="topic__body">
+          <div class="resource" onclick="openDoc('Network Security Fundamentals.pdf','pdf')">
+            <div class="resource__icon resource__icon--pdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+            <div class="resource__info"><div class="resource__name">Network Security Fundamentals</div><div class="resource__meta">PDF · 29 pages</div></div>
+            <span class="resource__badge resource__badge--graded">PDF</span>
+          </div>
+          <div class="resource" onclick="openDoc('Final Assignment — Network Design','assign')">
+            <div class="resource__icon resource__icon--assign"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
+            <div class="resource__info"><div class="resource__name">Final Assignment — Secure Network Design</div><div class="resource__meta">Due: 30 May 2026 · 50 marks</div></div>
+            <span class="resource__badge resource__badge--due">Upcoming</span>
+          </div>
+        </div>
+      </div>
+    </div><!-- /course-block ccnt -->
+
+  </main>
+</div>
+
+<!-- PDF MODAL -->
+<div class="pdf-backdrop" id="pdf-backdrop">
+  <div class="pdf-modal">
+    <div class="pdf-toolbar">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      <div class="pdf-title" id="pdf-title">Document</div>
+      <div class="pdf-toolbar-right">
+        <button class="btn btn--accent" id="pdf-dl-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download
+        </button>
+        <button class="btn" id="pdf-close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          Close
+        </button>
+      </div>
+    </div>
+    <div class="pdf-viewer" id="pdf-viewer">
+      <div class="pdf-placeholder">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        <p>Document preview</p>
+        <small>This is a demo — upload real files to your Moodle to see them here</small>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function toggleTopic(header) {
+    const topic = header.closest('.topic');
+    topic.classList.toggle('open');
+  }
+
+  function openDoc(name, type) {
+    document.getElementById('pdf-title').textContent = name;
+    document.getElementById('pdf-backdrop').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  document.getElementById('pdf-close').onclick = closeModal;
+  document.getElementById('pdf-backdrop').onclick = function(e) {
+    if (e.target === this) closeModal();
+  };
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeModal();
+  });
+
+  function closeModal() {
+    document.getElementById('pdf-backdrop').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+</script>
+</body>
+</html>
