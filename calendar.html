@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calendar — KIIT Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet" />
+  <style>
+    :root{--bg:#f7f6f3;--surface:#fff;--surface-2:#f0ede8;--border:#e4e0d8;--border-strong:#ccc8be;--text:#1a1916;--text-2:#6b6760;--text-3:#a09d99;--accent:#2d6ef7;--accent-light:#e8effe;--accent-hover:#1f55d4;--green:#1a9e5e;--green-light:#e4f7ef;--amber:#c67b13;--amber-light:#fef3e0;--red:#d63535;--red-light:#fdeaea;--purple:#7c3aed;--purple-light:#ede9fe;--radius-sm:6px;--radius:10px;--radius-lg:16px;--shadow-sm:0 1px 3px rgba(0,0,0,.06);--shadow:0 4px 16px rgba(0,0,0,.08);--nav-h:56px;--sidebar-w:220px;--font-body:'DM Sans',sans-serif;--font-mono:'DM Mono',monospace}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{font-size:15px;-webkit-font-smoothing:antialiased}
+    body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-height:100vh}
+    a{color:inherit;text-decoration:none}
+    button{cursor:pointer;font-family:inherit}
+    ul{list-style:none}
+    ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:999px}
+
+    /* Nav */
+    .topnav{position:fixed;top:0;left:0;right:0;z-index:100;height:var(--nav-h);background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:12px;box-shadow:var(--shadow-sm)}
+    .topnav__logo{font-weight:600;font-size:1rem;letter-spacing:-.02em;display:flex;align-items:center;gap:8px}
+    .topnav__logo .badge{font-family:var(--font-mono);font-size:.65rem;background:var(--accent-light);color:var(--accent);padding:2px 6px;border-radius:4px;font-weight:500}
+    .topnav__sep{width:1px;height:20px;background:var(--border);margin:0 4px}
+    .topnav__breadcrumb{font-size:.85rem;color:var(--text-2);display:flex;align-items:center;gap:6px}
+    .topnav__breadcrumb .active{color:var(--text);font-weight:500}
+    .topnav__right{margin-left:auto;display:flex;align-items:center;gap:8px}
+    .icon-btn{width:34px;height:34px;border:1px solid var(--border);border-radius:var(--radius-sm);background:transparent;display:inline-flex;align-items:center;justify-content:center;color:var(--text-2);transition:background .15s}
+    .icon-btn:hover{background:var(--surface-2);color:var(--text)}
+    .icon-btn svg{width:16px;height:16px}
+    .avatar-btn{display:flex;align-items:center;gap:8px;padding:4px 10px 4px 4px;border:1px solid var(--border);border-radius:999px;background:transparent;font-size:.82rem;font-weight:500;transition:background .15s}
+    .avatar-btn:hover{background:var(--surface-2)}
+    .avatar-btn .avatar{width:26px;height:26px;border-radius:999px;background:var(--accent);color:#fff;font-size:.7rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+
+    /* Layout */
+    .layout{display:flex;padding-top:var(--nav-h);min-height:100vh}
+    .sidebar{width:var(--sidebar-w);flex-shrink:0;position:sticky;top:var(--nav-h);height:calc(100vh - var(--nav-h));overflow-y:auto;background:var(--surface);border-right:1px solid var(--border);padding:16px 10px;display:flex;flex-direction:column;gap:4px}
+    .sidebar__label{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);padding:8px 10px 4px;margin-top:8px}
+    .sidebar__item{display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:var(--radius-sm);font-size:.875rem;color:var(--text-2);transition:background .13s,color .13s}
+    .sidebar__item:hover{background:var(--surface-2);color:var(--text)}
+    .sidebar__item.active{background:var(--accent-light);color:var(--accent);font-weight:500}
+    .sidebar__item svg{width:15px;height:15px;flex-shrink:0}
+    .sidebar__course{display:flex;align-items:center;gap:9px;padding:6px 10px;border-radius:var(--radius-sm);font-size:.82rem;color:var(--text-2);transition:background .13s}
+    .sidebar__course:hover{background:var(--surface-2);color:var(--text)}
+    .sidebar__course .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+    .main{flex:1;padding:32px 36px}
+
+    /* Page header */
+    .page-header{margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+    .page-header__left{}
+    .page-header__title{font-size:1.55rem;font-weight:600;letter-spacing:-.03em;line-height:1.2;margin-bottom:4px}
+    .page-header__sub{font-size:.88rem;color:var(--text-2)}
+    .page-header__nav{display:flex;align-items:center;gap:8px}
+    .nav-btn{width:34px;height:34px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);display:flex;align-items:center;justify-content:center;color:var(--text-2);transition:background .13s}
+    .nav-btn:hover{background:var(--surface-2);color:var(--text)}
+    .nav-btn svg{width:14px;height:14px}
+    .month-label{font-size:.95rem;font-weight:600;min-width:120px;text-align:center}
+
+    /* Two-col layout */
+    .cal-layout{display:grid;grid-template-columns:1fr 260px;gap:20px;align-items:start}
+    @media(max-width:900px){.cal-layout{grid-template-columns:1fr}.sidebar{display:none}.main{padding:20px 16px}}
+
+    /* Calendar grid */
+    .cal-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+    .cal-grid{display:grid;grid-template-columns:repeat(7,1fr)}
+    .cal-grid__head{display:grid;grid-template-columns:repeat(7,1fr);border-bottom:1px solid var(--border)}
+    .cal-grid__head div{padding:10px 0;text-align:center;font-family:var(--font-mono);font-size:.68rem;color:var(--text-3);text-transform:uppercase;letter-spacing:.08em;font-weight:500}
+    .cal-cell{min-height:90px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);padding:8px;position:relative;transition:background .13s;cursor:pointer}
+    .cal-cell:hover{background:var(--surface-2)}
+    .cal-cell:nth-child(7n){border-right:none}
+    .cal-cell--empty{background:var(--bg);cursor:default}
+    .cal-cell--empty:hover{background:var(--bg)}
+    .cal-cell--today{background:var(--accent-light)}
+    .cal-cell--today:hover{background:#dce9fd}
+    .cal-cell--weekend .cal-day{color:var(--text-3)}
+    .cal-day{font-size:.85rem;font-weight:500;color:var(--text-2);margin-bottom:4px;display:flex;align-items:center;justify-content:space-between}
+    .cal-cell--today .cal-day{color:var(--accent);font-weight:700}
+    .today-dot{width:6px;height:6px;background:var(--accent);border-radius:50%}
+    .cal-event{font-size:.7rem;padding:2px 6px;border-radius:4px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}
+    .cal-event--blue{background:var(--accent-light);color:var(--accent)}
+    .cal-event--green{background:var(--green-light);color:var(--green)}
+    .cal-event--amber{background:var(--amber-light);color:var(--amber)}
+    .cal-event--red{background:var(--red-light);color:var(--red)}
+    .cal-event--purple{background:var(--purple-light);color:var(--purple)}
+
+    /* Legend */
+    .legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius)}
+    .legend-item{display:flex;align-items:center;gap:6px;font-size:.75rem;color:var(--text-2)}
+    .legend-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+
+    /* Sidebar events list */
+    .events-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+    .events-card__header{padding:14px 16px;border-bottom:1px solid var(--border);font-family:var(--font-mono);font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text-3);font-weight:500}
+    .event-item{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;gap:12px;align-items:flex-start;cursor:pointer;transition:background .13s}
+    .event-item:last-child{border-bottom:none}
+    .event-item:hover{background:var(--surface-2)}
+    .event-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px}
+    .event-info{}
+    .event-name{font-size:.85rem;font-weight:500;color:var(--text);line-height:1.3}
+    .event-meta{font-size:.75rem;color:var(--text-3);margin-top:2px}
+    .event-course{font-size:.7rem;font-family:var(--font-mono);color:var(--text-3);margin-top:3px}
+    .no-events{padding:20px 16px;text-align:center;color:var(--text-3);font-size:.85rem}
+
+    @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    .fade-up{animation:fadeUp .25s ease both}
+  </style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a href="index.html" class="topnav__logo">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+    KIIT Moodle <span class="badge">LMS</span>
+  </a>
+  <div class="topnav__sep"></div>
+  <div class="topnav__breadcrumb">
+    <a href="index.html" style="color:var(--text-2)">Dashboard</a>
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+    <span class="active">Calendar</span>
+  </div>
+  <div class="topnav__right">
+    <button class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></button>
+    <a href="profile.html" class="avatar-btn"><div class="avatar">SA</div>23051951 SHEIKH ASIF</a>
+  </div>
+</nav>
+
+<div class="layout">
+  <aside class="sidebar">
+    <a href="index.html" class="sidebar__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a>
+    <a href="courses.html" class="sidebar__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>My Courses</a>
+    <a href="calendar.html" class="sidebar__item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Calendar</a>
+    <a href="grades.html" class="sidebar__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Grades</a>
+    <a href="profile.html" class="sidebar__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profile</a>
+    <div class="sidebar__label">My Courses</div>
+    <a href="courses.html#ccso50" class="sidebar__course"><div class="dot" style="background:#2d6ef7"></div>CCSO50</a>
+    <a href="courses.html#ccnt" class="sidebar__course"><div class="dot" style="background:#1a9e5e"></div>CCNTCSE1416</a>
+  </aside>
+
+  <main class="main">
+    <div class="page-header fade-up">
+      <div class="page-header__left">
+        <div class="page-header__title">Calendar</div>
+        <div class="page-header__sub">Academic schedule · May 2026</div>
+      </div>
+      <div class="page-header__nav">
+        <button class="nav-btn" onclick="changeMonth(-1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg></button>
+        <span class="month-label" id="month-label">May 2026</span>
+        <button class="nav-btn" onclick="changeMonth(1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></button>
+      </div>
+    </div>
+
+    <div class="cal-layout fade-up">
+      <!-- Calendar -->
+      <div>
+        <div class="cal-card">
+          <div class="cal-grid__head">
+            <div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div><div>Sun</div>
+          </div>
+          <div class="cal-grid" id="cal-grid"></div>
+        </div>
+        <div class="legend">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--accent-light);outline:1px solid var(--accent)"></div>CCSO50</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--green-light);outline:1px solid var(--green)"></div>CCNTCSE1416</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--red-light);outline:1px solid var(--red)"></div>Assignment Due</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--amber-light);outline:1px solid var(--amber)"></div>Quiz</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--purple-light);outline:1px solid var(--purple)"></div>Holiday</div>
+        </div>
+      </div>
+
+      <!-- Upcoming events list -->
+      <div class="events-card">
+        <div class="events-card__header">Upcoming Events</div>
+        <div id="events-list"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+  /* ── Event data ── */
+  const EVENTS = [
+    { date: '2026-05-20', name: 'Lab Assignment 1 Due', course: 'CCSO50', type: 'red' },
+    { date: '2026-05-22', name: 'Unit 4 Quiz', course: 'CCNTCSE1416', type: 'amber' },
+    { date: '2026-05-26', name: 'CCSO50 Lecture', course: 'CCSO50', type: 'blue' },
+    { date: '2026-05-26', name: 'Networks Lecture', course: 'CCNTCSE1416', type: 'green' },
+    { date: '2026-05-28', name: 'CTI Framework Quiz', course: 'CCSO50', type: 'amber' },
+    { date: '2026-05-30', name: 'Final Assignment Due', course: 'CCNTCSE1416', type: 'red' },
+    { date: '2026-06-02', name: 'CCSO50 Lecture', course: 'CCSO50', type: 'blue' },
+    { date: '2026-06-05', name: 'Networks Lecture', course: 'CCNTCSE1416', type: 'green' },
+    { date: '2026-06-10', name: 'Mid-term Exams Begin', course: 'Both', type: 'red' },
+    { date: '2026-06-15', name: 'Study Holiday', course: '', type: 'purple' },
+  ];
+
+  let currentYear = 2026, currentMonth = 4; // 0-indexed: 4=May
+  const TODAY = new Date(2026, 4, 19); // May 19 2026
+
+  const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+  function getEventsForDate(y, m, d) {
+    const key = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    return EVENTS.filter(e => e.date === key);
+  }
+
+  function renderCalendar() {
+    document.getElementById('month-label').textContent = `${MONTH_NAMES[currentMonth]} ${currentYear}`;
+    const grid = document.getElementById('cal-grid');
+    grid.innerHTML = '';
+
+    const firstDay = new Date(currentYear, currentMonth, 1).getDay(); // 0=Sun
+    const startOffset = (firstDay + 6) % 7; // Mon=0
+    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+    // Empty cells
+    for (let i = 0; i < startOffset; i++) {
+      const cell = document.createElement('div');
+      cell.className = 'cal-cell cal-cell--empty';
+      grid.appendChild(cell);
+    }
+
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dow = (startOffset + d - 1) % 7;
+      const isToday = d === TODAY.getDate() && currentMonth === TODAY.getMonth() && currentYear === TODAY.getFullYear();
+      const isWeekend = dow === 5 || dow === 6;
+      const events = getEventsForDate(currentYear, currentMonth, d);
+
+      const cell = document.createElement('div');
+      cell.className = 'cal-cell' + (isToday ? ' cal-cell--today' : '') + (isWeekend ? ' cal-cell--weekend' : '');
+
+      let evHtml = events.slice(0, 2).map(e =>
+        `<div class="cal-event cal-event--${e.type}">${e.name}</div>`
+      ).join('');
+      if (events.length > 2) evHtml += `<div class="cal-event cal-event--blue">+${events.length-2} more</div>`;
+
+      cell.innerHTML = `<div class="cal-day"><span>${d}</span>${isToday ? '<div class="today-dot"></div>' : ''}</div>${evHtml}`;
+      grid.appendChild(cell);
+    }
+
+    renderEventsList();
+  }
+
+  function renderEventsList() {
+    const list = document.getElementById('events-list');
+    const upcoming = EVENTS
+      .filter(e => {
+        const d = new Date(e.date);
+        return d >= TODAY;
+      })
+      .sort((a,b) => new Date(a.date) - new Date(b.date))
+      .slice(0, 8);
+
+    if (upcoming.length === 0) {
+      list.innerHTML = '<div class="no-events">No upcoming events</div>';
+      return;
+    }
+
+    list.innerHTML = upcoming.map(e => {
+      const d = new Date(e.date);
+      const label = d.toLocaleDateString('en-IN', { day:'numeric', month:'short' });
+      return `
+        <div class="event-item">
+          <div class="event-dot" style="background:var(--${e.type})"></div>
+          <div class="event-info">
+            <div class="event-name">${e.name}</div>
+            <div class="event-meta">${label}</div>
+            ${e.course ? `<div class="event-course">${e.course}</div>` : ''}
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  function changeMonth(dir) {
+    currentMonth += dir;
+    if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+    if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+    renderCalendar();
+  }
+
+  renderCalendar();
+</script>
+</body>
+</html>

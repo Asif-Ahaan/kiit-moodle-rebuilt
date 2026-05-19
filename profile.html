@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profile — KIIT Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet" />
+  <style>
+    :root{--bg:#f7f6f3;--surface:#fff;--surface-2:#f0ede8;--border:#e4e0d8;--border-strong:#ccc8be;--text:#1a1916;--text-2:#6b6760;--text-3:#a09d99;--accent:#2d6ef7;--accent-light:#e8effe;--green:#1a9e5e;--green-light:#e4f7ef;--amber:#c67b13;--amber-light:#fef3e0;--red:#d63535;--red-light:#fdeaea;--radius-sm:6px;--radius:10px;--radius-lg:16px;--shadow:0 4px 16px rgba(0,0,0,.08);--nav-h:56px;--sidebar-w:220px;--font-body:'DM Sans',sans-serif;--font-mono:'DM Mono',monospace}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{font-size:15px;-webkit-font-smoothing:antialiased}
+    body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-height:100vh}
+    a{color:inherit;text-decoration:none}
+    button{cursor:pointer;font-family:inherit}
+    ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:999px}
+
+    .topnav{position:fixed;top:0;left:0;right:0;z-index:100;height:var(--nav-h);background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:12px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+    .topnav__logo{font-weight:600;font-size:1rem;letter-spacing:-.02em;display:flex;align-items:center;gap:8px}
+    .topnav__logo .badge{font-family:var(--font-mono);font-size:.65rem;background:var(--accent-light);color:var(--accent);padding:2px 6px;border-radius:4px;font-weight:500}
+    .topnav__sep{width:1px;height:20px;background:var(--border);margin:0 4px}
+    .topnav__breadcrumb{font-size:.85rem;color:var(--text-2);display:flex;align-items:center;gap:6px}
+    .topnav__breadcrumb .active{color:var(--text);font-weight:500}
+    .topnav__right{margin-left:auto;display:flex;align-items:center;gap:8px}
+    .icon-btn{width:34px;height:34px;border:1px solid var(--border);border-radius:var(--radius-sm);background:transparent;display:inline-flex;align-items:center;justify-content:center;color:var(--text-2);transition:background .15s}
+    .icon-btn:hover{background:var(--surface-2)}
+    .icon-btn svg{width:16px;height:16px}
+    .avatar-btn{display:flex;align-items:center;gap:8px;padding:4px 10px 4px 4px;border:1px solid var(--border);border-radius:999px;background:transparent;font-size:.82rem;font-weight:500;transition:background .15s}
+    .avatar-btn:hover{background:var(--surface-2)}
+    .avatar-btn .avatar{width:26px;height:26px;border-radius:999px;background:var(--accent);color:#fff;font-size:.7rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+
+    .layout{display:flex;padding-top:var(--nav-h);min-height:100vh}
+    .sidebar{width:var(--sidebar-w);flex-shrink:0;position:sticky;top:var(--nav-h);height:calc(100vh - var(--nav-h));overflow-y:auto;background:var(--surface);border-right:1px solid var(--border);padding:16px 10px;display:flex;flex-direction:column;gap:4px}
+    .sidebar__label{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);padding:8px 10px 4px;margin-top:8px}
+    .sidebar__item{display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:var(--radius-sm);font-size:.875rem;color:var(--text-2);transition:background .13s,color .13s}
+    .sidebar__item:hover{background:var(--surface-2);color:var(--text)}
+    .sidebar__item.active{background:var(--accent-light);color:var(--accent);font-weight:500}
+    .sidebar__item svg{width:15px;height:15px;flex-shrink:0}
+    .sidebar__course{display:flex;align-items:center;gap:9px;padding:6px 10px;border-radius:var(--radius-sm);font-size:.82rem;color:var(--text-2);transition:background .13s}
+    .sidebar__course:hover{background:var(--surface-2);color:var(--text)}
+    .sidebar__course .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+    .main{flex:1;padding:32px 36px;max-width:860px}
+
+    /* Profile hero */
+    .profile-hero{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:28px;display:flex;align-items:center;gap:24px;margin-bottom:20px}
+    .profile-avatar{width:72px;height:72px;border-radius:50%;background:var(--accent);color:#fff;font-size:1.6rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;letter-spacing:-.02em}
+    .profile-hero__info{}
+    .profile-hero__name{font-size:1.25rem;font-weight:600;letter-spacing:-.02em;margin-bottom:4px}
+    .profile-hero__id{font-family:var(--font-mono);font-size:.78rem;color:var(--text-3);margin-bottom:10px}
+    .profile-hero__pills{display:flex;gap:8px;flex-wrap:wrap}
+    .pill{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:999px;font-size:.73rem;font-weight:500}
+    .pill--green{background:var(--green-light);color:var(--green)}
+    .pill--blue{background:var(--accent-light);color:var(--accent)}
+    .pill--amber{background:var(--amber-light);color:var(--amber)}
+
+    /* Two-col */
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    @media(max-width:700px){.two-col{grid-template-columns:1fr}}
+
+    /* Info card */
+    .info-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:16px}
+    .info-card__header{padding:14px 18px;border-bottom:1px solid var(--border);font-family:var(--font-mono);font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text-3);font-weight:500}
+    .info-row{display:flex;align-items:flex-start;padding:12px 18px;border-bottom:1px solid var(--border);gap:12px}
+    .info-row:last-child{border-bottom:none}
+    .info-row__label{font-size:.8rem;color:var(--text-3);min-width:120px;flex-shrink:0;padding-top:1px}
+    .info-row__value{font-size:.875rem;color:var(--text);font-weight:500;line-height:1.4}
+
+    /* Activity list */
+    .activity-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+    .activity-card__header{padding:14px 18px;border-bottom:1px solid var(--border);font-family:var(--font-mono);font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text-3);font-weight:500}
+    .activity-item{display:flex;align-items:flex-start;gap:12px;padding:12px 18px;border-bottom:1px solid var(--border);transition:background .13s}
+    .activity-item:last-child{border-bottom:none}
+    .activity-item:hover{background:var(--surface-2)}
+    .activity-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px}
+    .activity-name{font-size:.875rem;font-weight:500;color:var(--text);margin-bottom:2px}
+    .activity-meta{font-size:.75rem;color:var(--text-3)}
+
+    /* Quick links */
+    .quick-links{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+    .quick-link{display:flex;align-items:center;gap:10px;padding:14px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);transition:background .13s,border-color .13s,box-shadow .2s;cursor:pointer}
+    .quick-link:hover{background:var(--surface-2);border-color:var(--border-strong);box-shadow:var(--shadow)}
+    .quick-link__icon{width:34px;height:34px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .quick-link__icon svg{width:16px;height:16px}
+    .quick-link__label{font-size:.85rem;font-weight:500}
+    .quick-link__sub{font-size:.75rem;color:var(--text-3);margin-top:1px}
+
+    /* Logout button */
+    .logout-btn{display:flex;align-items:center;gap:8px;padding:10px 16px;background:var(--red-light);border:1px solid var(--red);border-radius:var(--radius-sm);color:var(--red);font-size:.85rem;font-weight:500;width:100%;transition:background .13s;margin-top:8px}
+    .logout-btn:hover{background:#f8d0d0}
+    .logout-btn svg{width:15px;height:15px}
+
+    @media(max-width:900px){.sidebar{display:none}.main{padding:20px 16px}}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    .fade-up{animation:fadeUp .25s ease both}
+  </style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a href="index.html" class="topnav__logo">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+    KIIT Moodle <span class="badge">LMS</span>
+  </a>
+  <div class="topnav__sep"></div>
+  <div class="topnav__breadcrumb">
+    <a href="index.html" style="color:var(--text-2)">Dashboard</a>
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+    <span class="active">Profile</span>
+  </div>
+  <div class="topnav__right">
+    <button class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></button>
+    <a href="profile.html" class="avatar-btn"><div class="avatar">SA</div>23051951 SHEIKH ASIF</a>
+  </div>
+</nav>
+
+<div class="layout">
+  <aside class="sidebar">
+    <a href="index.html" class="sidebar__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a>
+    <a href="courses.html" class="sidebar__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>My Courses</a>
+    <a href="calendar.html" class="sidebar__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Calendar</a>
+    <a href="grades.html" class="sidebar__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Grades</a>
+    <a href="profile.html" class="sidebar__item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profile</a>
+    <div class="sidebar__label">My Courses</div>
+    <a href="courses.html#ccso50" class="sidebar__course"><div class="dot" style="background:#2d6ef7"></div>CCSO50</a>
+    <a href="courses.html#ccnt" class="sidebar__course"><div class="dot" style="background:#1a9e5e"></div>CCNTCSE1416</a>
+  </aside>
+
+  <main class="main">
+
+    <!-- Hero -->
+    <div class="profile-hero fade-up">
+      <div class="profile-avatar">SA</div>
+      <div class="profile-hero__info">
+        <div class="profile-hero__name">Sheikh Asif Arhaan</div>
+        <div class="profile-hero__id">Roll No: 23051951 · User ID: 45759</div>
+        <div class="profile-hero__pills">
+          <span class="pill pill--green">Active Student</span>
+          <span class="pill pill--blue">B.Tech CSE</span>
+          <span class="pill pill--amber">3rd Year</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <!-- Left col -->
+      <div>
+        <!-- Academic info -->
+        <div class="info-card fade-up">
+          <div class="info-card__header">Academic Details</div>
+          <div class="info-row">
+            <div class="info-row__label">Full Name</div>
+            <div class="info-row__value">Sheikh Asif Arhaan</div>
+          </div>
+          <div class="info-row">
+            <div class="info-row__label">Roll Number</div>
+            <div class="info-row__value" style="font-family:var(--font-mono)">23051951</div>
+          </div>
+          <div class="info-row">
+            <div class="info-row__label">Programme</div>
+            <div class="info-row__value">B.Tech — Computer Science & Engineering</div>
+          </div>
+          <div class="info-row">
+            <div class="info-row__label">School</div>
+            <div class="info-row__value">School of Computer Engineering (KIIT)</div>
+          </div>
+          <div class="info-row">
+            <div class="info-row__label">Year / Semester</div>
+            <div class="info-row__value">3rd Year · Semester 6</div>
+          </div>
+          <div class="info-row">
+            <div class="info-row__label">Batch</div>
+            <div class="info-row__value">2023 – 2027</div>
+          </div>
+          <div class="info-row">
+            <div class="info-row__label">CGPA (est.)</div>
+            <div class="info-row__value" style="color:var(--green);font-weight:600">8.1 / 10</div>
+          </div>
+        </div>
+
+        <!-- Contact info -->
+        <div class="info-card fade-up">
+          <div class="info-card__header">Contact</div>
+          <div class="info-row">
+            <div class="info-row__label">Institution Email</div>
+            <div class="info-row__value" style="font-family:var(--font-mono);font-size:.8rem">23051951@kiit.ac.in</div>
+          </div>
+          <div class="info-row">
+            <div class="info-row__label">Timezone</div>
+            <div class="info-row__value">Asia / Kolkata (IST, UTC +5:30)</div>
+          </div>
+          <div class="info-row">
+            <div class="info-row__label">Moodle Profile</div>
+            <div class="info-row__value"><a href="https://kiitmoodle.in/user/profile.php?id=45759" target="_blank" style="color:var(--accent);text-decoration:underline">View on KIIT Moodle ↗</a></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right col -->
+      <div>
+        <!-- Quick links -->
+        <div class="info-card fade-up">
+          <div class="info-card__header">Quick Links</div>
+          <div style="padding:12px">
+            <div class="quick-links">
+              <a href="courses.html" class="quick-link">
+                <div class="quick-link__icon" style="background:var(--accent-light);color:var(--accent)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></div>
+                <div><div class="quick-link__label">My Courses</div><div class="quick-link__sub">2 enrolled</div></div>
+              </a>
+              <a href="grades.html" class="quick-link">
+                <div class="quick-link__icon" style="background:var(--green-light);color:var(--green)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+                <div><div class="quick-link__label">Grades</div><div class="quick-link__sub">81% overall</div></div>
+              </a>
+              <a href="calendar.html" class="quick-link">
+                <div class="quick-link__icon" style="background:var(--amber-light);color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+                <div><div class="quick-link__label">Calendar</div><div class="quick-link__sub">2 due soon</div></div>
+              </a>
+              <a href="https://kiitmoodle.in/user/preferences.php" target="_blank" class="quick-link">
+                <div class="quick-link__icon" style="background:var(--surface-2);color:var(--text-2)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg></div>
+                <div><div class="quick-link__label">Preferences</div><div class="quick-link__sub">Moodle settings ↗</div></div>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent activity -->
+        <div class="activity-card fade-up">
+          <div class="activity-card__header">Recent Activity</div>
+          <div class="activity-item">
+            <div class="activity-dot" style="background:var(--green)"></div>
+            <div>
+              <div class="activity-name">Submitted: IR Playbook Assignment</div>
+              <div class="activity-meta">CCSO50 · 15 Apr 2026</div>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-dot" style="background:var(--accent)"></div>
+            <div>
+              <div class="activity-name">Viewed: Routing Protocols Slides</div>
+              <div class="activity-meta">CCNTCSE1416 · 18 Apr 2026</div>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-dot" style="background:var(--green)"></div>
+            <div>
+              <div class="activity-name">Submitted: Vuln Scan Report</div>
+              <div class="activity-meta">CCSO50 · 29 Apr 2026</div>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-dot" style="background:var(--amber)"></div>
+            <div>
+              <div class="activity-name">Quiz: Unit 4 (Networks)</div>
+              <div class="activity-meta">CCNTCSE1416 · 3 May 2026 · 11/12</div>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-dot" style="background:var(--accent)"></div>
+            <div>
+              <div class="activity-name">Viewed: MITRE ATT&amp;CK Framework PDF</div>
+              <div class="activity-meta">CCSO50 · 10 May 2026</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Logout -->
+        <button class="logout-btn fade-up" onclick="alert('This is a demo site. Log out at kiitmoodle.in')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Log out of KIIT Moodle
+        </button>
+      </div>
+    </div>
+
+  </main>
+</div>
+</body>
+</html>
